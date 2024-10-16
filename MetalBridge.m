@@ -18,7 +18,7 @@ void runMetalComputationBridge(float* inputData, float* outputData, int width, i
                                   outputData:outputData
                                        width:width
                                       height:height
-                                      stride:stride  // 传递 stride 参数
+                                      stride:stride
                                numIterations:numIterations
                              grainRadiusMean:grainRadiusMean
                               grainRadiusStd:grainRadiusStd
