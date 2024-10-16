@@ -1,8 +1,7 @@
 **NOT SURE IF WORKING**
 
 # vs-fgrain-cuda
-[Realistic Film Grain Rendering](https://www.ipol.im/pub/art/2017/192/) for VapourSynth, implemented in Metal. A port of https://github.com/AmusementClub/vs-fgrain-cuda/blob/master/README.md?plain=1
-
+[Realistic Film Grain Rendering](https://www.ipol.im/pub/art/2017/192/) for VapourSynth, implemented in Metal. A port of https://github.com/AmusementClub/vs-fgrain-cuda/
 ## Usage
 Prototype:
 
