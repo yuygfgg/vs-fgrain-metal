@@ -9,6 +9,7 @@ import Cocoa
 import Metal
 import MetalKit
 import CoreImage
+import simd
 
 @objc class MetalComputeBridge: NSObject {
     
@@ -225,10 +226,26 @@ import CoreImage
         commandBuffer.commit()
         commandBuffer.waitUntilCompleted()
         
-        // Export output texture data back to output array
         if let outputPixelData = exportTextureToGrayscaleData(texture: outputTexture) {
-            for i in 0..<outputPixelData.count {
-                outputData[i] = outputPixelData[i]
+            let count = outputPixelData.count
+
+            let simdWidth = 4
+            let simdCount = count / simdWidth
+
+            outputPixelData.withUnsafeBufferPointer { pixelDataBuffer in
+                guard let pixelDataBaseAddress = pixelDataBuffer.baseAddress else { return }
+
+                outputData.withMemoryRebound(to: SIMD4<Float>.self, capacity: simdCount) { outputSIMDPtr in
+                    pixelDataBaseAddress.withMemoryRebound(to: SIMD4<Float>.self, capacity: simdCount) { pixelDataSIMDPtr in
+                        for i in 0..<simdCount {
+                            outputSIMDPtr[i] = pixelDataSIMDPtr[i]
+                        }
+                    }
+                }
+
+                for i in (simdCount * simdWidth)..<count {
+                    outputData[i] = pixelDataBaseAddress[i]
+                }
             }
         } else {
             print("Failed to export output texture data.")
