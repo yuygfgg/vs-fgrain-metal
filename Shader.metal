@@ -55,14 +55,9 @@ int my_rand_poisson(thread noise_prng &p, float lambda, float prod) {
     float sum = prod;
     float x = 0.0f;
 
-    while (u > sum && x < 10000.0f * lambda) {
+    while (u > sum && x < 10000.0f * lambda && !(prod < 1e-6 || prod > 1e6)) {
         x += 1.0f;
         prod *= lambda / x;
-
-        // 防止 prod 过小或过大，导致数值精度问题
-        if (prod < 1e-6 || prod > 1e6) {
-            break;
-        }
 
         sum += prod;
     }
@@ -89,10 +84,11 @@ float render_pixel(
 ) {
     float inv_grain_radius_mean = ceil(1.0f / grain_radius_mean);
     float ag = 1.0f / inv_grain_radius_mean;
+    float grain_radius_sq = grain_radius_mean * grain_radius_mean;
 
     int pixel_val = 0;
 
-    // Monte Carlo iterations
+    // Monte Carlo
     for (int i = 0; i < num_iterations; i++) {
         float x_gauss = float(x) + sigma * x_gaussian[i];
         float y_gauss = float(y) + sigma * y_gaussian[i];
@@ -109,9 +105,6 @@ float render_pixel(
             for (int iy = y_start; iy <= y_end && !found_grain; iy++) {
                 float cell_x = ag * float(ix);
                 float cell_y = ag * float(iy);
-
-                // PRNG to generate random values
-//                noise_prng p = noise_prng(cellseed(ix, iy, uint(seed)));
 
                 // 计算当前cell中的像素位置
                 int px = clamp(int(round(cell_x)), 0, width - 1);
@@ -130,7 +123,7 @@ float render_pixel(
                     float yCentreGrain = cell_y + ag * p.myrand_uniform_0_1();
 
                     // 判断是否在grain的范围内
-                    if (sq_distance(xCentreGrain, yCentreGrain, x_gauss, y_gauss) < grain_radius_mean * grain_radius_mean) {
+                    if (sq_distance(xCentreGrain, yCentreGrain, x_gauss, y_gauss) < grain_radius_sq) {
                         pixel_val += 1;
                         found_grain = true;  // 设置标志，退出所有循环
                         break;  // 退出内层循环

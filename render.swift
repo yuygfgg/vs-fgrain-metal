@@ -30,7 +30,7 @@ import CoreImage
         // Check the pixel format to handle different texture formats
         if texture.pixelFormat == .r32Float {
             // Single channel (grayscale) texture
-            let pixelByteCount = MemoryLayout<Float>.size // 1 channel, 4 bytes per pixel
+            let pixelByteCount = MemoryLayout<Float>.size
 
             // Create a buffer to hold the pixel data
             var pixelData = [Float](repeating: 0.0, count: width * height)
@@ -107,7 +107,7 @@ import CoreImage
 
         let metallibURL = URL(fileURLWithPath: "/usr/local/lib/vapoursynth/default.metallib")
 
-        // 创建 Metal 设备
+        // Create Metal device
         guard let device = MTLCreateSystemDefaultDevice() else {
             print("Failed to create Metal device.")
             return
@@ -214,7 +214,7 @@ import CoreImage
         computeEncoder.setBuffer(xGaussianBuffer, offset: 0, index: 10)
         computeEncoder.setBuffer(yGaussianBuffer, offset: 0, index: 11)
 
-        let threadGroupSize = MTLSize(width: 16, height: 16, depth: 1)
+        let threadGroupSize = MTLSize(width: 32, height: 32, depth: 1)
         let threadGroups = MTLSize(width: (Int(width) + threadGroupSize.width - 1) / threadGroupSize.width,
                                    height: (Int(height) + threadGroupSize.height - 1) / threadGroupSize.height,
                                    depth: 1)
@@ -226,7 +226,7 @@ import CoreImage
         commandBuffer.waitUntilCompleted()
         
         // Export output texture data back to output array
-        if let outputPixelData = exportTextureToGrayscaleData(texture: outputTexture) { //DEBUG!!
+        if let outputPixelData = exportTextureToGrayscaleData(texture: outputTexture) {
             for i in 0..<outputPixelData.count {
                 outputData[i] = outputPixelData[i]
             }

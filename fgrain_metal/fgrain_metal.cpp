@@ -53,11 +53,6 @@ static const VSFrame *VS_CC filmGrainGetFrame(int n, int activationReason, void 
             if (fi->sampleType == stFloat && fi->bitsPerSample == 32) {
                 const float *srcpF32 = (const float *)srcp;
                 float *dstpF32 = (float *)dstp;
-//                for (int y = 0; y < h; y++) {
-//                    memcpy(dstpF32 + y * (dstStride / sizeof(float)),
-//                            srcpF32 + y * (srcStride / sizeof(float)),
-//                            w * sizeof(float));
-//                }
 
                 runMetalComputationBridge(const_cast<float*>(srcpF32), dstpF32, w, h, srcStride / sizeof(float),
                                           d->numIterations, d->grainRadiusMean, d->grainRadiusStd,
@@ -87,11 +82,10 @@ static void VS_CC filmGrainCreate(const VSMap *in, VSMap *out, void *userData, V
     FilmGrainData *data;
     int err;
 
-    // 获取输入的视频节点
     d.node = vsapi->mapGetNode(in, "clip", 0, 0);
     d.vi = vsapi->getVideoInfo(d.node);
 
-    // 检查是否支持32-bit int或float
+    // 32-bit float
     const VSVideoFormat *fi = &(d.vi->format);
     if (!vsh::isConstantVideoFormat(d.vi) ||
         !(fi->sampleType == stFloat && fi->bitsPerSample == 32)) {
@@ -100,7 +94,6 @@ static void VS_CC filmGrainCreate(const VSMap *in, VSMap *out, void *userData, V
         return;
     }
 
-    // 获取并解析参数
     d.numIterations = vsapi->mapGetIntSaturated(in, "numIterations", 0, &err);
     if (err) d.numIterations = 800;
 
