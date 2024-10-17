@@ -35,10 +35,10 @@ struct noise_prng {
 };
 
 // 生成用于 PRNG 的种子
-uint cellseed(int x, int y, uint offset) {
+inline uint cellseed(int x, int y, uint offset) {
     const uint period = 65536u; // 65536 = 2^16
     uint s = ((uint(y % int(period))) * period + (uint(x % int(period)))) + offset;
-    if (s == 0u) s = 1u;
+    s |= (s == 0u); // if (s == 0u) s = 1u;
     return s;
 }
 
@@ -55,7 +55,6 @@ int my_rand_poisson(thread noise_prng &p, float lambda, float prod) {
     float sum = prod;
     float x = 0.0f;
 
-    // 限制最大迭代次数避免过大值
     while (u > sum && x < 10000.0f * lambda) {
         x += 1.0f;
         prod *= lambda / x;
@@ -91,7 +90,6 @@ float render_pixel(
     float inv_grain_radius_mean = ceil(1.0f / grain_radius_mean);
     float ag = 1.0f / inv_grain_radius_mean;
 
-    // 使用 stride 计算索引，确保正确访问纹理
     int pixel_val = 0;
 
     // Monte Carlo iterations
@@ -104,7 +102,8 @@ float render_pixel(
         int y_start = int(floor((y_gauss - grain_radius_mean) * inv_grain_radius_mean));
         int y_end = int(ceil((y_gauss + grain_radius_mean) * inv_grain_radius_mean));
 
-        bool found_grain = false;  // 用于退出多层循环的标志
+        noise_prng p = noise_prng(cellseed(x_start, y_start, uint(seed)));
+        bool found_grain = false;
         // 遍历所有可能的grain位置
         for (int ix = x_start; ix <= x_end && !found_grain; ix++) {
             for (int iy = y_start; iy <= y_end && !found_grain; iy++) {
@@ -112,15 +111,15 @@ float render_pixel(
                 float cell_y = ag * float(iy);
 
                 // PRNG to generate random values
-                noise_prng p = noise_prng(cellseed(ix, iy, uint(seed)));
+//                noise_prng p = noise_prng(cellseed(ix, iy, uint(seed)));
 
                 // 计算当前cell中的像素位置
-                int px = min(max(int(round(cell_x)), 0), width - 1);
-                int py = min(max(int(round(cell_y)), 0), height - 1);
+                int px = clamp(int(round(cell_x)), 0, width - 1);
+                int py = clamp(int(round(cell_y)), 0, height - 1);
 
                 // 根据纹理值计算索引
                 float cellPixelValue = src.read(uint2(px, py)).r;
-                int pixelIndex = max(0, min(int(cellPixelValue * 255.1f), 255));
+                int pixelIndex = int(clamp(cellPixelValue * 255.1f, 0.0f, 255.0f));
 
                 // 生成泊松随机数
                 int n_cell = my_rand_poisson(p, lambda[pixelIndex], exp_lambda[pixelIndex]);
@@ -142,10 +141,8 @@ float render_pixel(
     }
 
     // 计算最终的grain值
-    float grainValue = (float(pixel_val) / float(num_iterations));
-    grainValue = float(min(grainValue, 1.0f));
-
-    return grainValue;
+    float grainValue = float(pixel_val) / float(num_iterations);
+    return clamp(grainValue, 0.0f, 1.0f);
 }
 
 // Metal 计算着色器内核
