@@ -91,7 +91,7 @@ static void VS_CC filmGrainCreate(const VSMap *in, VSMap *out, void *userData, V
     d.node = vsapi->mapGetNode(in, "clip", 0, 0);
     d.vi = vsapi->getVideoInfo(d.node);
 
-    // 检查是否支持16-bit int或float
+    // 检查是否支持32-bit int或float
     const VSVideoFormat *fi = &(d.vi->format);
     if (!vsh::isConstantVideoFormat(d.vi) ||
         !(fi->sampleType == stFloat && fi->bitsPerSample == 32)) {
