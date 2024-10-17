@@ -24,6 +24,7 @@
 		63125E4D2CBF56B800C8CBAF /* VapourSynth4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VapourSynth4.h; sourceTree = "<group>"; };
 		63125E4E2CBF56B800C8CBAF /* VSHelper4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VSHelper4.h; sourceTree = "<group>"; };
 		63125E512CBF56F800C8CBAF /* Shader.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shader.metal; sourceTree = "<group>"; };
+		63125E532CC0186F00C8CBAF /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -48,6 +49,7 @@
 				63125E512CBF56F800C8CBAF /* Shader.metal */,
 				63125E4D2CBF56B800C8CBAF /* VapourSynth4.h */,
 				63125E4E2CBF56B800C8CBAF /* VSHelper4.h */,
+				63125E532CC0186F00C8CBAF /* README.md */,
 			);
 			sourceTree = "<group>";
 		};

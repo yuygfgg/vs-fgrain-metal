@@ -51,30 +51,6 @@ import CoreImage
                     }
                 }
             }
-        } else if texture.pixelFormat == .rgba16Float {
-            // RGBA texture with 16-bit float components
-            let pixelByteCount = 4 * MemoryLayout<Float>.size // 4 channels (RGBA), 4 bytes per channel
-
-            // Create a buffer to hold the pixel data
-            var pixelData = [Float](repeating: 0.0, count: width * height * 4)
-
-            // Get the bytes from the texture into the buffer
-            texture.getBytes(&pixelData,
-                             bytesPerRow: width * pixelByteCount,
-                             from: MTLRegionMake2D(0, 0, width, height),
-                             mipmapLevel: 0)
-
-            // Print the RGBA pixel values
-            for y in 0..<height {
-                for x in 0..<width {
-                    let index = (y * width + x) * 4
-                    let r = pixelData[index]
-                    let g = pixelData[index + 1]
-                    let b = pixelData[index + 2]
-                    let a = pixelData[index + 3]
-                    print("Pixel at (\(x), \(y)): R=\(r), G=\(g), B=\(b), A=\(a)")
-                }
-            }
         } else {
             print("Unsupported pixel format: \(texture.pixelFormat)")
         }
@@ -182,7 +158,6 @@ import CoreImage
         computeEncoder.setTexture(outputTexture, index: 1)
 
         var stride = stride
-        print(stride)
         // Compute ag
         let ag: Float = 1.0 / ceil(1.0 / grainRadiusMean)
 
@@ -249,9 +224,9 @@ import CoreImage
 
         commandBuffer.commit()
         commandBuffer.waitUntilCompleted()
-
+        
         // Export output texture data back to output array
-        if let outputPixelData = exportTextureToGrayscaleData(texture: outputTexture) {
+        if let outputPixelData = exportTextureToGrayscaleData(texture: outputTexture) { //DEBUG!!
             for i in 0..<outputPixelData.count {
                 outputData[i] = outputPixelData[i]
             }

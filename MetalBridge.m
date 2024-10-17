@@ -5,7 +5,7 @@
 //  Created by yuygfgg on 2024/10/16.
 //
 
-// MetalBridge.mm
+// MetalBridge.m
 #import "fgrain_metal-Bridging-Header.h"
 #import "fgrain_metal-Swift.h"
 

@@ -53,6 +53,11 @@ static const VSFrame *VS_CC filmGrainGetFrame(int n, int activationReason, void 
             if (fi->sampleType == stFloat && fi->bitsPerSample == 32) {
                 const float *srcpF32 = (const float *)srcp;
                 float *dstpF32 = (float *)dstp;
+//                for (int y = 0; y < h; y++) {
+//                    memcpy(dstpF32 + y * (dstStride / sizeof(float)),
+//                            srcpF32 + y * (srcStride / sizeof(float)),
+//                            w * sizeof(float));
+//                }
 
                 runMetalComputationBridge(const_cast<float*>(srcpF32), dstpF32, w, h, srcStride / sizeof(float),
                                           d->numIterations, d->grainRadiusMean, d->grainRadiusStd,
