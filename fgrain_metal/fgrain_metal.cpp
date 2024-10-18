@@ -43,10 +43,10 @@ static const VSFrame *VS_CC filmGrainGetFrame(int n, int activationReason, void 
         int plane;
         for (plane = 0; plane < fi->numPlanes; plane++) {
             const uint8_t *srcp = vsapi->getReadPtr(src, plane);
-            int srcStride = vsapi->getStride(src, plane);
+            int srcStride = (int)vsapi->getStride(src, plane);
             uint8_t *dstp = vsapi->getWritePtr(dst, plane);
-            int dstStride = vsapi->getStride(dst, plane);
-
+            int dstStride = (int)vsapi->getStride(dst, plane);
+            (void) dstStride;
             int h = vsapi->getFrameHeight(src, plane);
             int w = vsapi->getFrameWidth(src, plane);
 
