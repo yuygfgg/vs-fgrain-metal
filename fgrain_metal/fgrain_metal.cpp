@@ -49,6 +49,14 @@ static const VSFrame *VS_CC filmGrainGetFrame(int n, int activationReason, void 
             (void) dstStride;
             int h = vsapi->getFrameHeight(src, plane);
             int w = vsapi->getFrameWidth(src, plane);
+            
+            const VSMap* src_props = vsapi->getFramePropertiesRO(src);
+            
+            int error;
+            int seed_offset = vsh::int64ToIntS(vsapi->mapGetInt(src_props, "FGRAIN_SEED_OFFSET", 0, &error));
+            if (error) {
+                seed_offset = 0;
+            }
 
             if (fi->sampleType == stFloat && fi->bitsPerSample == 32) {
                 const float *srcpF32 = (const float *)srcp;
@@ -56,7 +64,7 @@ static const VSFrame *VS_CC filmGrainGetFrame(int n, int activationReason, void 
 
                 runMetalComputationBridge(const_cast<float*>(srcpF32), dstpF32, w, h, srcStride / sizeof(float),
                                           d->numIterations, d->grainRadiusMean, d->grainRadiusStd,
-                                          d->sigma, d->seed);
+                                          d->sigma, d->seed + seed_offset);
             } else {
                 vsapi->freeFrame(src);
                 vsapi->freeFrame(dst);

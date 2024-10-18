@@ -35,7 +35,7 @@ struct noise_prng {
 };
 
 // 生成用于 PRNG 的种子
-inline uint cellseed(int x, int y, uint offset) {
+inline uint cellseed(const int x, const int y, const uint offset) {
     const uint period = 65536u; // 65536 = 2^16
     uint s = ((uint(y % int(period))) * period + (uint(x % int(period)))) + offset;
     s |= (s == 0u); // if (s == 0u) s = 1u;
@@ -43,12 +43,12 @@ inline uint cellseed(int x, int y, uint offset) {
 }
 
 // 计算两个点的平方距离
-inline float sq_distance(float x1, float y1, float x2, float y2) {
+inline float sq_distance(const float x1, const float y1, const float x2, const float y2) {
     return (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2);
 }
 
 // 泊松分布生成随机数
-int my_rand_poisson(thread noise_prng &p, float lambda, float prod) {
+int my_rand_poisson(thread noise_prng &p, const float lambda, float prod) {
     // 生成随机的 u 值
     float u = p.myrand_uniform_0_1();
 
@@ -68,23 +68,22 @@ int my_rand_poisson(thread noise_prng &p, float lambda, float prod) {
 
 float render_pixel(
     texture2d<float, access::read> src,
-    int width,
-    int height,
-    int stride,
-    int x,
-    int y,
-    int num_iterations,
-    float grain_radius_mean,
-    float sigma,
-    int seed,
+    const int width,
+    const int height,
+    const int x,
+    const int y,
+    const int num_iterations,
+    const float grain_radius_mean,
+    const float sigma,
+    const int seed,
     device const float* lambda,
     device const float* exp_lambda,
     device const float* x_gaussian,
     device const float* y_gaussian
 ) {
-    float inv_grain_radius_mean = ceil(1.0f / grain_radius_mean);
-    float ag = 1.0f / inv_grain_radius_mean;
-    float grain_radius_sq = grain_radius_mean * grain_radius_mean;
+    const float inv_grain_radius_mean = ceil(1.0f / grain_radius_mean);
+    const float ag = grain_radius_mean;
+    const float grain_radius_sq = grain_radius_mean * grain_radius_mean;
 
     int pixel_val = 0;
 
@@ -170,7 +169,6 @@ kernel void film_grain_rendering_kernel(
         src,                    // 纹理
         width,                  // 图像宽度
         height,                 // 图像高度
-        stride,                 // 步幅
         x,                      // 当前像素 x 坐标
         y,                      // 当前像素 y 坐标
         num_iterations,         // 渲染迭代次数
