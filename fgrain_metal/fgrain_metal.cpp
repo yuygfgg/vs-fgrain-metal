@@ -113,7 +113,7 @@ static void VS_CC filmGrainCreate(const VSMap *in, VSMap *out, void *userData, V
     *data = d;
 
     VSFilterDependency deps[] = {{d.node, rpStrictSpatial}};
-    vsapi->createVideoFilter(out, "FilmGrain", d.vi, filmGrainGetFrame, filmGrainFree, fmParallel, deps, 1, data, core);
+    vsapi->createVideoFilter(out, "FilmGrain", d.vi, filmGrainGetFrame, filmGrainFree, fmParallelRequests, deps, 1, data, core);
 }
 
 VS_EXTERNAL_API(void) VapourSynthPluginInit2(VSPlugin *plugin, const VSPLUGINAPI *vspapi) {

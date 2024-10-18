@@ -75,7 +75,6 @@ float render_pixel(
     int y,
     int num_iterations,
     float grain_radius_mean,
-    float grain_radius_std,
     float sigma,
     int seed,
     device const float* lambda,
@@ -87,7 +86,7 @@ float render_pixel(
     float ag = 1.0f / inv_grain_radius_mean;
     float grain_radius_sq = grain_radius_mean * grain_radius_mean;
 
-    float pixel_val = 0;
+    int pixel_val = 0;
 
     // Monte Carlo
     for (int i = 0; i < num_iterations; i++) {
@@ -176,7 +175,6 @@ kernel void film_grain_rendering_kernel(
         y,                      // 当前像素 y 坐标
         num_iterations,         // 渲染迭代次数
         grain_radius_mean,       // 颗粒半径均值
-        grain_radius_std,        // 颗粒半径标准差
         sigma,                  // 高斯分布的 sigma
         seed,                   // 随机种子
         lambda,                 // 泊松分布参数
