@@ -215,7 +215,7 @@ import simd
         computeEncoder.setBuffer(xGaussianBuffer, offset: 0, index: 10)
         computeEncoder.setBuffer(yGaussianBuffer, offset: 0, index: 11)
 
-        let threadGroupSize = MTLSize(width: 32, height: 32, depth: 1)
+        let threadGroupSize = MTLSize(width: 24, height: 24, depth: 1)
         let threadGroups = MTLSize(width: (Int(width) + threadGroupSize.width - 1) / threadGroupSize.width,
                                    height: (Int(height) + threadGroupSize.height - 1) / threadGroupSize.height,
                                    depth: 1)
@@ -228,24 +228,11 @@ import simd
         
         if let outputPixelData = exportTextureToGrayscaleData(texture: outputTexture) {
             let count = outputPixelData.count
-
-            let simdWidth = 4
-            let simdCount = count / simdWidth
-
+            
             outputPixelData.withUnsafeBufferPointer { pixelDataBuffer in
                 guard let pixelDataBaseAddress = pixelDataBuffer.baseAddress else { return }
-
-                outputData.withMemoryRebound(to: SIMD4<Float>.self, capacity: simdCount) { outputSIMDPtr in
-                    pixelDataBaseAddress.withMemoryRebound(to: SIMD4<Float>.self, capacity: simdCount) { pixelDataSIMDPtr in
-                        for i in 0..<simdCount {
-                            outputSIMDPtr[i] = pixelDataSIMDPtr[i]
-                        }
-                    }
-                }
-
-                for i in (simdCount * simdWidth)..<count {
-                    outputData[i] = pixelDataBaseAddress[i]
-                }
+                
+                memcpy(outputData, pixelDataBaseAddress, count * MemoryLayout<Float32>.size)
             }
         } else {
             print("Failed to export output texture data.")

@@ -115,7 +115,7 @@ static void VS_CC filmGrainCreate(const VSMap *in, VSMap *out, void *userData, V
     if (err) d.sigma = 0.8f;
 
     d.seed = vsapi->mapGetIntSaturated(in, "seed", 0, &err);
-    if (err) d.seed = 114514;
+    if (err) d.seed = 0;
 
     data = (FilmGrainData *)malloc(sizeof(d));
     *data = d;

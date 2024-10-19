@@ -50,12 +50,13 @@ inline float sq_distance(const float x1, const float y1, const float x2, const f
 // 泊松分布生成随机数
 int my_rand_poisson(thread noise_prng &p, const float lambda, float prod) {
     // 生成随机的 u 值
-    float u = p.myrand_uniform_0_1();
+    const float u = p.myrand_uniform_0_1();
+    const float x_max = 10000.0f * lambda;
 
     float sum = prod;
     float x = 0.0f;
 
-    while (u > sum && x < 10000.0f * lambda) {
+    while (u > sum && x < x_max) {
         x += 1.0f;
         prod *= lambda / x;
 //        prod = clamp(prod, 1e-6f, 1e6f);
@@ -172,7 +173,7 @@ kernel void film_grain_rendering_kernel(
         x,                      // 当前像素 x 坐标
         y,                      // 当前像素 y 坐标
         num_iterations,         // 渲染迭代次数
-        grain_radius_mean,       // 颗粒半径均值
+        grain_radius_mean,      // 颗粒半径均值
         sigma,                  // 高斯分布的 sigma
         seed,                   // 随机种子
         lambda,                 // 泊松分布参数
